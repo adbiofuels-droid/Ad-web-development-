@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Devraj — Web Designer & Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --white:#ffffff;
+  --cream:#fafaf8;
+  --light:#f2f2ef;
+  --border:#e8e8e3;
+  --mid:#9a9a92;
+  --ink:#111110;
+  --green:#1e5c3a;
+  --green-light:#2d7a50;
+  --gold:#c9a84c;
+  --shadow:rgba(0,0,0,0.06);
+}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--cream);
+  color:var(--ink);
+  overflow-x:hidden;
+  cursor:none;
+}
+
+/* CURSOR */
+.cursor{
+  position:fixed;width:10px;height:10px;
+  background:var(--ink);border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:width .25s,height .25s,background .25s;
+}
+.cursor-ring{
+  position:fixed;width:36px;height:36px;
+  border:1.5px solid var(--ink);border-radius:50%;
+  pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:all .12s ease;opacity:.5;
+}
+body:has(a:hover) .cursor{width:16px;height:16px;background:var(--green);}
+body:has(a:hover) .cursor-ring{width:50px;height:50px;border-color:var(--green);}
+
+/* NOISE OVERLAY */
+.noise{
+  position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* SCROLL PROGRESS */
+.progress-bar{
+  position:fixed;top:0;left:0;height:2px;
+  background:linear-gradient(90deg,var(--green),var(--gold));
+  z-index:1000;width:0%;transition:width .1s linear;
+}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 5vw;height:64px;
+  background:rgba(250,250,248,0.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid transparent;
+  transition:border-color .3s;
+}
+nav.scrolled{border-color:var(--border);}
+.nav-logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.3rem;font-weight:600;letter-spacing:.02em;
+  color:var(--ink);text-decoration:none;
+}
+.nav-links{display:flex;gap:2.5rem;list-style:none;align-items:center;}
+.nav-links a{
+  text-decoration:none;color:var(--mid);
+  font-size:.75rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+  transition:color .2s;position:relative;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:-3px;left:0;width:0;height:1px;
+  background:var(--green);transition:width .3s;
+}
+.nav-links a:hover{color:var(--ink);}
+.nav-links a:hover::after{width:100%;}
+.nav-cta{
+  background:var(--ink)!important;color:var(--white)!important;
+  padding:9px 22px!important;border-radius:2px;
+  transition:background .2s!important;
+}
+.nav-cta::after{display:none!important;}
+.nav-cta:hover{background:var(--green)!important;}
+
+/* SECTIONS BASE */
+section{position:relative;z-index:1;}
+.container{max-width:1200px;margin:0 auto;padding:0 5vw;}
+.label{
+  display:inline-flex;align-items:center;gap:.6rem;
+  font-size:.7rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--green);margin-bottom:1.5rem;
+}
+.label::before{content:'';width:24px;height:1px;background:var(--green);}
+
+/* HERO */
+#hero{
+  min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+  padding:120px 5vw 80px;
+  background:var(--cream);
+  overflow:hidden;position:relative;
+}
+.hero-bg-text{
+  position:absolute;right:-2vw;top:50%;transform:translateY(-50%);
+  font-family:'Cormorant Garamond',serif;font-size:22vw;font-weight:300;
+  color:rgba(0,0,0,0.03);line-height:1;pointer-events:none;user-select:none;
+  letter-spacing:-.02em;
+}
+.hero-top{
+  display:flex;align-items:center;gap:1rem;
+  margin-bottom:2.5rem;
+  opacity:0;transform:translateY(20px);animation:fadeUp .8s .1s forwards;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:var(--light);border:1px solid var(--border);
+  padding:6px 14px;border-radius:100px;
+  font-size:.72rem;font-weight:500;letter-spacing:.06em;color:var(--mid);
+}
+.hero-dot{width:7px;height:7px;border-radius:50%;background:#4caf50;box-shadow:0 0 0 0 rgba(76,175,80,.4);animation:pulse 2s infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(76,175,80,.4);}70%{box-shadow:0 0 0 8px rgba(76,175,80,0);}100%{box-shadow:0 0 0 0 rgba(76,175,80,0);}}
+
+h1{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(3.5rem,8vw,7.5rem);
+  font-weight:300;line-height:1.0;letter-spacing:-.025em;
+  color:var(--ink);max-width:900px;
+  opacity:0;transform:translateY(30px);animation:fadeUp .9s .2s forwards;
+}
+h1 em{font-style:italic;color:var(--green);}
+h1 span.stroke{
+  -webkit-text-stroke:1px var(--ink);color:transparent;
+  transition:color .3s,-webkit-text-stroke .3s;
+}
+.hero-sub{
+  font-size:1rem;color:var(--mid);max-width:440px;line-height:1.75;
+  margin:2rem 0 3rem;font-weight:300;
+  opacity:0;transform:translateY(20px);animation:fadeUp .9s .35s forwards;
+}
+.hero-actions{
+  display:flex;gap:1rem;align-items:center;flex-wrap:wrap;
+  opacity:0;transform:translateY(20px);animation:fadeUp .9s .45s forwards;
+}
+.btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  text-decoration:none;font-size:.78rem;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;
+  padding:14px 30px;border-radius:2px;transition:all .25s;
+}
+.btn-dark{background:var(--ink);color:var(--white);}
+.btn-dark:hover{background:var(--green);transform:translateY(-2px);box-shadow:0 12px 30px rgba(30,92,58,.25);}
+.btn-outline{background:transparent;color:var(--ink);border:1.5px solid var(--border);}
+.btn-outline:hover{border-color:var(--ink);transform:translateY(-2px);}
+.hero-scroll{
+  position:absolute;bottom:3rem;left:5vw;
+  display:flex;align-items:center;gap:.8rem;
+  font-size:.7rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--mid);
+  opacity:0;animation:fadeUp .9s .7s forwards;
+}
+.scroll-line{width:40px;height:1px;background:var(--mid);position:relative;overflow:hidden;}
+.scroll-line::after{
+  content:'';position:absolute;left:-100%;top:0;width:100%;height:100%;
+  background:var(--green);animation:scrollAnim 1.8s 1s infinite;
+}
+@keyframes scrollAnim{0%{left:-100%;}100%{left:100%;}}
+.hero-stats{
+  display:flex;gap:4rem;margin-top:5rem;padding-top:3rem;
+  border-top:1px solid var(--border);flex-wrap:wrap;
+  opacity:0;animation:fadeUp .9s .55s forwards;
+}
+.stat-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:2.8rem;font-weight:300;line-height:1;color:var(--ink);
+}
+.stat-label{font-size:.75rem;color:var(--mid);margin-top:.3rem;letter-spacing:.04em;}
+
+@keyframes fadeUp{to{opacity:1;transform:translateY(0);}}
+
+/* MARQUEE */
+.marquee-section{
+  padding:18px 0;background:var(--ink);
+  overflow:hidden;border-top:1px solid rgba(255,255,255,.06);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.marquee-track{
+  display:flex;gap:3rem;white-space:nowrap;
+  animation:marquee 20s linear infinite;width:max-content;
+}
+.marquee-track span{
+  font-size:.72rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(255,255,255,.35);padding:0 .5rem;
+}
+.marquee-track .dot{color:var(--gold);}
+@keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* SERVICES */
+#services{padding:120px 0;background:var(--cream);}
+.services-header{
+  display:grid;grid-template-columns:1fr 1fr;gap:3rem;
+  align-items:end;margin-bottom:5rem;
+}
+h2{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2.2rem,4vw,3.5rem);
+  font-weight:300;line-height:1.15;letter-spacing:-.02em;color:var(--ink);
+}
+h2 em{font-style:italic;color:var(--green);}
+.services-intro{font-size:.92rem;color:var(--mid);line-height:1.8;font-weight:300;padding-top:.5rem;}
+.services-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  border-top:1px solid var(--border);border-left:1px solid var(--border);
+}
+.service-card{
+  padding:2.5rem 2rem;
+  border-right:1px solid var(--border);border-bottom:1px solid var(--border);
+  position:relative;overflow:hidden;
+  transition:background .3s;cursor:default;
+}
+.service-card::before{
+  content:'';position:absolute;bottom:0;left:0;width:0;height:2px;
+  background:linear-gradient(90deg,var(--green),var(--gold));
+  transition:width .4s ease;
+}
+.service-card:hover::before{width:100%;}
+.service-card:hover{background:var(--light);}
+.service-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:3.5rem;font-weight:300;color:var(--border);
+  line-height:1;margin-bottom:1.5rem;
+  transition:color .3s;
+}
+.service-card:hover .service-num{color:var(--green);opacity:.3;}
+.service-title{font-size:.95rem;font-weight:600;color:var(--ink);margin-bottom:.6rem;}
+.service-desc{font-size:.82rem;color:var(--mid);line-height:1.7;font-weight:300;}
+.service-price{
+  display:inline-block;margin-top:1.5rem;
+  font-size:.75rem;font-weight:600;color:var(--green);letter-spacing:.06em;
+}
+
+/* WORK */
+#work{padding:120px 0;background:var(--light);}
+.work-header{margin-bottom:4rem;}
+.work-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5px;background:var(--border);}
+.project-card{
+  background:var(--cream);overflow:hidden;
+  position:relative;cursor:pointer;
+  transition:transform .0s;
+}
+.project-inner{position:relative;overflow:hidden;}
+.project-thumb{
+  width:100%;aspect-ratio:16/10;
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.project-thumb img{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform .6s cubic-bezier(.25,.46,.45,.94),filter .6s;
+  filter:saturate(.9);
+}
+.project-card:hover .project-thumb img{transform:scale(1.04);filter:saturate(1.1);}
+.project-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top, rgba(10,10,8,.7) 0%, transparent 60%);
+  opacity:0;transition:opacity .4s;
+}
+.project-card:hover .project-overlay{opacity:1;}
+.project-overlay-cta{
+  position:absolute;bottom:2rem;left:2rem;
+  display:flex;align-items:center;gap:.6rem;
+  color:var(--white);font-size:.75rem;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;
+  opacity:0;transform:translateY(8px);transition:all .35s .05s;
+}
+.project-card:hover .project-overlay-cta{opacity:1;transform:translateY(0);}
+.project-arrow{
+  width:32px;height:32px;border:1px solid rgba(255,255,255,.4);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:.9rem;
+}
+.project-info{padding:2rem 2.2rem 2.4rem;}
+.project-tag{
+  font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--mid);margin-bottom:.5rem;
+}
+.project-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.6rem;font-weight:400;color:var(--ink);
+  margin-bottom:.5rem;letter-spacing:-.01em;
+}
+.project-desc{font-size:.82rem;color:var(--mid);line-height:1.7;font-weight:300;}
+.project-tags{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1.2rem;}
+.tag-pill{
+  font-size:.68rem;font-weight:500;letter-spacing:.06em;
+  background:var(--light);border:1px solid var(--border);
+  color:var(--mid);padding:4px 12px;border-radius:100px;
+}
+
+/* THUMB FALLBACKS */
+.thumb-fobet{background:linear-gradient(135deg,#0d0d0d 0%,#1a1a1a 50%,#111 100%);}
+.thumb-reias{background:linear-gradient(135deg,#1a2e1a 0%,#2d4a2d 50%,#1e3a1e 100%);}
+.thumb-krisaw{background:linear-gradient(135deg,#2a3a1a 0%,#3d5228 50%,#2d4a1a 100%);}
+.thumb-monga{background:linear-gradient(135deg,#1a2a3a 0%,#1e3a5a 50%,#152840 100%);}
+.thumb-placeholder{
+  width:100%;height:100%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:.5rem;
+}
+.thumb-logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:2.5rem;font-weight:300;letter-spacing:.1em;color:rgba(255,255,255,.8);
+}
+.thumb-sub{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.35);}
+
+/* PROCESS */
+#process{padding:120px 0;background:var(--ink);}
+#process .label{color:var(--gold);}
+#process .label::before{background:var(--gold);}
+#process h2{color:var(--white);}
+#process h2 em{color:var(--gold);}
+.process-intro{font-size:.92rem;color:rgba(255,255,255,.4);line-height:1.8;font-weight:300;max-width:420px;margin-bottom:4rem;}
+.process-steps{display:flex;flex-direction:column;}
+.process-step{
+  display:grid;grid-template-columns:80px 1fr 1fr;
+  align-items:center;gap:2rem;
+  padding:2.5rem 0;border-bottom:1px solid rgba(255,255,255,.07);
+  transition:background .2s;
+}
+.process-step:last-child{border-bottom:none;}
+.step-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1rem;font-weight:300;color:rgba(255,255,255,.2);
+  letter-spacing:.1em;
+}
+.step-title{font-size:1rem;font-weight:500;color:var(--white);}
+.step-desc{font-size:.82rem;color:rgba(255,255,255,.4);line-height:1.7;font-weight:300;}
+
+/* TESTIMONIAL */
+#testimonial{padding:100px 0;background:var(--cream);}
+.testimonial-inner{
+  max-width:760px;margin:0 auto;text-align:center;
+}
+.quote-mark{
+  font-family:'Cormorant Garamond',serif;
+  font-size:5rem;line-height:.8;color:var(--border);
+  margin-bottom:.5rem;
+}
+.testimonial-text{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(1.4rem,3vw,2rem);
+  font-weight:300;font-style:italic;
+  line-height:1.5;color:var(--ink);margin-bottom:2rem;
+}
+.testimonial-author{
+  font-size:.75rem;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--mid);
+}
+.testimonial-author span{color:var(--green);}
+
+/* CONTACT */
+#contact{
+  padding:140px 5vw;
+  background:var(--ink);
+  position:relative;overflow:hidden;
+}
+.contact-bg{
+  position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 60% at 70% 50%, rgba(30,92,58,.15) 0%, transparent 70%);
+}
+.contact-inner{max-width:700px;position:relative;z-index:1;}
+#contact .label{color:var(--gold);}
+#contact .label::before{background:var(--gold);}
+#contact h2{color:var(--white);margin-bottom:1.2rem;}
+.contact-sub{
+  font-size:.95rem;color:rgba(255,255,255,.4);
+  line-height:1.8;font-weight:300;margin-bottom:3rem;max-width:460px;
+}
+.contact-actions{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:4rem;}
+.btn-green{background:var(--green);color:var(--white);}
+.btn-green:hover{background:var(--green-light);transform:translateY(-2px);box-shadow:0 12px 30px rgba(30,92,58,.4);}
+.btn-white-outline{
+  background:transparent;color:rgba(255,255,255,.7);
+  border:1.5px solid rgba(255,255,255,.15);
+}
+.btn-white-outline:hover{border-color:rgba(255,255,255,.4);color:var(--white);transform:translateY(-2px);}
+.contact-detail{
+  padding-top:3rem;border-top:1px solid rgba(255,255,255,.07);
+  display:flex;gap:3rem;flex-wrap:wrap;
+}
+.contact-item p{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:.3rem;}
+.contact-item a,.contact-item span{font-size:.88rem;color:rgba(255,255,255,.6);text-decoration:none;transition:color .2s;}
+.contact-item a:hover{color:var(--white);}
+
+/* FOOTER */
+footer{
+  background:var(--ink);border-top:1px solid rgba(255,255,255,.05);
+  padding:1.8rem 5vw;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;
+}
+footer p{font-size:.72rem;color:rgba(255,255,255,.2);}
+footer a{color:rgba(255,255,255,.3);text-decoration:none;transition:color .2s;}
+footer a:hover{color:rgba(255,255,255,.6);}
+
+/* REVEAL ANIMATIONS */
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal-delay-1{transition-delay:.1s;}
+.reveal-delay-2{transition-delay:.2s;}
+.reveal-delay-3{transition-delay:.3s;}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .services-grid{grid-template-columns:repeat(2,1fr);}
+  .work-grid{grid-template-columns:1fr;}
+  .services-header{grid-template-columns:1fr;}
+  .process-step{grid-template-columns:60px 1fr;gap:1rem;}
+  .step-desc{grid-column:2;}
+}
+@media(max-width:600px){
+  nav{padding:0 5vw;}
+  .nav-links{gap:1.5rem;}
+  .nav-links li:not(:last-child):not(:nth-last-child(2)){display:none;}
+  .services-grid{grid-template-columns:1fr;}
+  .hero-stats{gap:2rem;}
+  .contact-detail{gap:2rem;}
+  .cursor,.cursor-ring{display:none;}
+  body{cursor:auto;}
+  .process-step{grid-template-columns:1fr;gap:.5rem;}
+  .step-num{font-size:.8rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="noise"></div>
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">Devraj.</a>
+  <ul class="nav-links">
+    <li><a href="#work">Work</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#process">Process</a></li>
+  <a href="https://wa.me/918708203358" class="nav-cta">Start a Project</a>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-text">WEB</div>
+  <div class="hero-top">
+    <div class="hero-badge">
+      <span class="hero-dot"></span>
+      Available for new projects
+    </div>
+  </div>
+  <h1>Websites that<br/>make your business<br/><em>impossible</em> to <span class="stroke">ignore.</span></h1>
+  <p class="hero-sub">I design and build high-performance websites for businesses in Dubai and India — crafted to convert visitors into paying clients.</p>
+  <div class="hero-actions">
+    <a href="#contact" class="btn btn-dark">Start a Project &rarr;</a>
+    <a href="#work" class="btn btn-outline">View My Work</a>
+  </div>
+  <div class="hero-stats">
+    <div>
+      <div class="stat-num" data-count="15">0</div>
+      <div class="stat-label">Projects delivered</div>
+    </div>
+    <div>
+      <div class="stat-num">48h</div>
+      <div class="stat-label">First draft turnaround</div>
+    </div>
+    <div>
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Client satisfaction</div>
+    </div>
+    <div>
+      <div class="stat-num">7–10d</div>
+      <div class="stat-label">Average launch time</div>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    Scroll to explore
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-track" id="marquee">
+    <span>Real Estate Websites</span><span class="dot">✦</span>
+    <span>Personal Branding</span><span class="dot">✦</span>
+    <span>Medical & Clinic</span><span class="dot">✦</span>
+    <span>E-commerce Stores</span><span class="dot">✦</span>
+    <span>Corporate Portals</span><span class="dot">✦</span>
+    <span>Landing Pages</span><span class="dot">✦</span>
+    <span>Dubai & India</span><span class="dot">✦</span>
+    <span>Lead Generation</span><span class="dot">✦</span>
+    <span>Mobile-First Design</span><span class="dot">✦</span>
+    <span>Real Estate Websites</span><span class="dot">✦</span>
+    <span>Personal Branding</span><span class="dot">✦</span>
+    <span>Medical & Clinic</span><span class="dot">✦</span>
+    <span>E-commerce Stores</span><span class="dot">✦</span>
+    <span>Corporate Portals</span><span class="dot">✦</span>
+    <span>Landing Pages</span><span class="dot">✦</span>
+    <span>Dubai & India</span><span class="dot">✦</span>
+    <span>Lead Generation</span><span class="dot">✦</span>
+    <span>Mobile-First Design</span><span class="dot">✦</span>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="container">
+    <div class="services-header reveal">
+      <div>
+        <div class="label">What I Build</div>
+        <h2>Every type of site.<br/><em>One standard</em> of craft.</h2>
+      </div>
+      <p class="services-intro">From real estate portals to personal branding hubs — I build websites that do one thing well: turn the right visitors into paying clients.</p>
+    </div>
+    <div class="services-grid reveal">
+      <div class="service-card">
+        <div class="service-num">01</div>
+        <div class="service-title">Real Estate Website</div>
+        <div class="service-desc">Listing pages, lead capture, WhatsApp integration. Stop depending on portals. Own your leads directly.</div>
+        <span class="service-price">From $1,500</span>
+      </div>
+      <div class="service-card">
+        <div class="service-num">02</div>
+        <div class="service-title">Personal Brand & Agency</div>
+        <div class="service-desc">Authority-building websites for founders, coaches, and agencies. Built to position you as the expert in your niche.</div>
+        <span class="service-price">From $1,400</span>
+      </div>
+      <div class="service-card">
+        <div class="service-num">03</div>
+        <div class="service-title">Medical & Clinic</div>
+        <div class="service-desc">Trust-first websites for doctors and clinics. Appointment flows, service pages, and credibility that converts.</div>
+        <span class="service-price">From $1,400</span>
+      </div>
+      <div class="service-card">
+        <div class="service-num">04</div>
+        <div class="service-title">Corporate & B2B</div>
+        <div class="service-desc">Professional portals for companies needing investor-ready, client-facing digital presence.</div>
+        <span class="service-price">From $1,800</span>
+      </div>
+      <div class="service-card">
+        <div class="service-num">05</div>
+        <div class="service-title">E-commerce Store</div>
+        <div class="service-desc">Full online store with product catalog, payment gateway, and inventory management. Built to sell.</div>
+        <span class="service-price">From $2,000</span>
+      </div>
+      <div class="service-card">
+        <div class="service-num">06</div>
+        <div class="service-title">Landing Page</div>
+        <div class="service-desc">Single high-converting page for a product, campaign, or launch. Fast to ship, built to convert.</div>
+        <span class="service-price">From $600</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WORK -->
+<section id="work">
+  <div class="container">
+    <div class="work-header reveal">
+      <div class="label">Selected Work</div>
+      <h2>Projects I've <em>built.</em></h2>
+    </div>
+    <div class="work-grid reveal">
+
+      <!-- FOBET MEDIA -->
+      <div class="project-card">
+        <div class="project-inner">
+          <div class="project-thumb thumb-fobet">
+            <div class="thumb-placeholder">
+              <div class="thumb-logo">FOBET</div>
+              <div class="thumb-sub">Personal Branding Agency</div>
+            </div>
+            <div class="project-overlay">
+              <div class="project-overlay-cta">
+                <span>View Live Site</span>
+                <div class="project-arrow">↗</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="project-info">
+          <div class="project-tag">Personal Branding · India</div>
+          <div class="project-name">Fobet Media</div>
+          <div class="project-desc">A done-for-you personal branding agency run by Vibhav Raj & Riya Upreti — founders who've generated 500M+ views and scaled 70+ clients to 7 figures. Built a high-conversion website that positions them as India's top authority in short-form video strategy for entrepreneurs.</div>
+          <div class="project-tags">
+            <span class="tag-pill">Lead Gen</span>
+            <span class="tag-pill">Agency Site</span>
+            <span class="tag-pill">Conversion CRO</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- REIAS INDIA -->
+      <div class="project-card">
+        <div class="project-inner">
+          <div class="project-thumb thumb-reias">
+            <div class="thumb-placeholder">
+              <div class="thumb-logo">REIAS</div>
+              <div class="thumb-sub">Premium Real Estate · Gurugram</div>
+            </div>
+            <div class="project-overlay">
+              <div class="project-overlay-cta">
+                <span>View Live Site</span>
+                <div class="project-arrow">↗</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="project-info">
+          <div class="project-tag">Real Estate · Gurugram, India</div>
+          <div class="project-name">REIAS India</div>
+          <div class="project-desc">A premium real estate portal for Gurugram's luxury property market — featuring listings from Adani, M3M, Sobha, and Lamborghini Residences. Built with advanced property filtering, direct lead capture, and a mobile-first design that converts browsers into serious buyers.</div>
+          <div class="project-tags">
+            <span class="tag-pill">Real Estate Portal</span>
+            <span class="tag-pill">Luxury Properties</span>
+            <span class="tag-pill">Lead Capture</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- KRISAW -->
+      <div class="project-card">
+        <div class="project-inner">
+          <div class="project-thumb thumb-krisaw">
+            <div class="thumb-placeholder">
+              <div class="thumb-logo">KRISAW</div>
+              <div class="thumb-sub">Agriculture Equipment · India</div>
+            </div>
+            <div class="project-overlay">
+              <div class="project-overlay-cta">
+                <span>Case Study</span>
+                <div class="project-arrow">↗</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="project-info">
+          <div class="project-tag">Agriculture · India</div>
+          <div class="project-name">KRISAW India</div>
+          <div class="project-desc">Premium animated website for a post-harvest agricultural equipment brand. Includes an interactive product catalog, scroll-triggered animations, and a B2B lead capture system for dealer and distributor inquiries.</div>
+          <div class="project-tags">
+            <span class="tag-pill">Animated Website</span>
+            <span class="tag-pill">B2B</span>
+            <span class="tag-pill">Product Catalog</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MONGA HOSPITAL -->
+      <div class="project-card">
+        <div class="project-inner">
+          <div class="project-thumb thumb-monga">
+            <div class="thumb-placeholder">
+              <div class="thumb-logo">MONGA</div>
+              <div class="thumb-sub">Multi-Speciality Hospital</div>
+            </div>
+            <div class="project-overlay">
+              <div class="project-overlay-cta">
+                <span>Case Study</span>
+                <div class="project-arrow">↗</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="project-info">
+          <div class="project-tag">Healthcare · India</div>
+          <div class="project-name">Monga Hospital</div>
+          <div class="project-desc">Full website redesign for a multi-speciality hospital. Complete with doctor profiles, department pages, online appointment booking, and a trust-first design that drives patient inquiries.</div>
+          <div class="project-tags">
+            <span class="tag-pill">Healthcare</span>
+            <span class="tag-pill">Redesign</span>
+            <span class="tag-pill">Appointment Booking</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="container">
+    <div class="reveal">
+      <div class="label">How It Works</div>
+      <h2>Simple process,<br/><em>fast results.</em></h2>
+      <p class="process-intro">No bloated agencies, no endless revision cycles. Just a clean, efficient process from brief to launch.</p>
+    </div>
+    <div class="process-steps reveal">
+      <div class="process-step">
+        <div class="step-num">01</div>
+        <div class="step-title">Discovery Call</div>
+        <div class="step-desc">30 minutes. We define your goals, your audience, and exactly what you want visitors to do when they land on your site.</div>
+      </div>
+      <div class="process-step">
+        <div class="step-num">02</div>
+        <div class="step-title">Design Draft in 48 Hours</div>
+        <div class="step-desc">You see a full design mockup within 2 days. We refine together — usually takes 1–2 rounds max.</div>
+      </div>
+      <div class="process-step">
+        <div class="step-num">03</div>
+        <div class="step-title">Build & Launch</div>
+        <div class="step-desc">Full development, cross-device testing, SEO setup, and a clean handover. Most projects go live in 7–10 days.</div>
+      </div>
+      <div class="process-step">
+        <div class="step-num">04</div>
+        <div class="step-title">30-Day Post-Launch Support</div>
+        <div class="step-desc">Free edits for 30 days after launch. Your site will work exactly as intended — I make sure of it.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIAL -->
+<section id="testimonial">
+  <div class="container">
+    <div class="testimonial-inner reveal">
+      <div class="quote-mark">&ldquo;</div>
+      <p class="testimonial-text">Devraj delivered exactly what we needed — a site that looks premium, loads fast, and actually brings in inquiries. The whole process was seamless.</p>
+      <div class="testimonial-author">— Client, <span>Real Estate Agency · Gurugram</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-bg"></div>
+  <div class="contact-inner reveal">
+    <div class="label">Get In Touch</div>
+    <h2>Let's build something<br/><em>worth visiting.</em></h2>
+    <p class="contact-sub">Tell me about your business and I'll get back within a few hours. No long intake forms, no agency fluff — just a direct conversation.</p>
+    <div class="contact-actions">
+      <a href="https://wa.me/918708203358" class="btn btn-green">WhatsApp Me &rarr;</a>
+      <a href="mailto:dhimandivyansh91@gmail.com" class="btn btn-white-outline">Send an Email</a>
+    </div>
+    <div class="contact-detail">
+      <div class="contact-item">
+        <p>Based in</p>
+        <span>India</span>
+      </div>
+      <div class="contact-item">
+        <p>Serving</p>
+        <span>Dubai, UAE · India</span>
+      </div>
+      <div class="contact-item">
+        <p>Response time</p>
+        <span>Under 4 hours</span>
+      </div>
+      <div class="contact-item">
+        <p>WhatsApp</p>
+        <a href="https://wa.me/918708203358">+91 87082 03358</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Devraj. All rights reserved.</p>
+  <p><a href="#work">Work</a> &nbsp;·&nbsp; <a href="#services">Services</a> &nbsp;·&nbsp; <a href="#contact">Contact</a></p>
+</footer>
+
+<script>
+// Custom cursor
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px';});
+function animRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing);}
+animRing();
+
+// Scroll progress
+const bar = document.getElementById('progressBar');
+const nav = document.getElementById('nav');
+window.addEventListener('scroll',()=>{
+  const pct = window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  bar.style.width=pct+'%';
+  nav.classList.toggle('scrolled',window.scrollY>40);
+});
+
+// Reveal on scroll
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');}});
+},{threshold:.12});
+reveals.forEach(r=>observer.observe(r));
+
+// Counter animation
+function animCount(el,target){
+  let start=0;const dur=1800;const step=timestamp=>{
+    if(!start)start=timestamp;
+    const progress=Math.min((timestamp-start)/dur,1);
+    const ease=1-Math.pow(1-progress,3);
+    el.textContent=Math.floor(ease*target)+'+';
+    if(progress<1)requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+const counterEls=document.querySelectorAll('[data-count]');
+const counterObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      animCount(e.target,parseInt(e.target.dataset.count));
+      counterObs.unobserve(e.target);
+    }
+  });
+},{threshold:.5});
+counterEls.forEach(el=>counterObs.observe(el));
+
+// Parallax hero bg text
+const bgText=document.querySelector('.hero-bg-text');
+window.addEventListener('scroll',()=>{
+  if(bgText)bgText.style.transform=`translateY(calc(-50% + ${window.scrollY*.15}px))`;
+});
+</script>
+</body>
+</html>
